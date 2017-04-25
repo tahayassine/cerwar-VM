@@ -13,6 +13,7 @@ void	ft_print_champion(t_proc players)
 	ft_putstr(players.header.prog_name);
 	ft_putstr("\nComment : ");
 	ft_putstr(players.header.comment);
+	printf("\n%s : %d\n", "taile:" ,players.mem_size);
 	ft_putstr("\n\n");
 }
 
@@ -43,7 +44,7 @@ void	ft_add_player(t_proc players[], int fd, char arena[], int nb_players)
 	buf[n] = 0;
 	if (buf[1] != CEM_1 || buf[2] != CEM_2 || buf[3] != CEM_3)
 	{
-		ft_putendl(": incorrect magic number, stopping. D:");
+		ft_putendl("Error : Incorrect magic number.");
 		exit(2);
 	}
 	ft_fill_name(players, buf, (int)no, fd);

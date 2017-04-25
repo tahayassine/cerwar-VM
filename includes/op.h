@@ -2,6 +2,7 @@
 #ifndef OP_H
 # define OP_H
 # include "libft.h"
+# include "debug.h"
 
 # define IND_SIZE				2
 # define REG_SIZE				4
@@ -46,6 +47,7 @@
 # define CEM_1					(char)(CEM >> 16)
 # define CEM_2					(char)((CEM & 65280) >> 8)
 # define CEM_3					(char)(CEM & 255)
+# define DEBUG					true
 
 typedef char		t_arg_type;
 
@@ -67,6 +69,7 @@ typedef struct		s_op
 	char			*description;
 	int				has_pcode;
 	int				has_idx;
+	int				lab_size;
 }					t_op;
 
 typedef struct		s_proc
@@ -86,5 +89,6 @@ void	ft_fill_comment(t_proc players[], char *buf, int no, int fd);
 void	ft_fill_memsize(t_proc players[], char *buf, int no, int fd);
 void	ft_fill_arena(t_proc players[], char *buf, int no, int fd);
 void	ft_init_players(t_proc players[], int argc, char *argv[], char aren[]);
+t_op	op_tab[17];
 
 #endif
