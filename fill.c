@@ -3,8 +3,9 @@
 #include <unistd.h>
 #include "libft.h"
 #include "op.h"
+#include "tyassine.h"
 
-void	ft_fill_name(t_proc players[], char *buf, int no, int fd)
+void	ft_fill_name(t_env *env, char *buf, int fd)
 {
 	int		i;
 	int		n;
@@ -14,83 +15,96 @@ void	ft_fill_name(t_proc players[], char *buf, int no, int fd)
 	buf[n] = 0;
 	while (buf[i] != 0)
 	{
-		players[no].header.prog_name[i] = buf[i];
+		if (buf[i] >= 32 && buf[i] <= '~')
+			env->players[env->no].header.prog_name[i] = buf[i];
+		else
+			ft_exit_error("commentaire non valide", 2);
 		++i;
 	}
-	players[no].header.prog_name[i] = 0;
+	env->players[env->no].header.prog_name[i] = 0;
 }
 
-void	ft_fill_comment(t_proc players[], char *buf, int no, int fd)
+void	ft_fill_comment(t_env *env, char *buf, int fd)
 {
 	int		i;
 	int		n;
 
 	i = 0;
 	n = read(fd, buf, COMMENT_LENGTH);
+	(n <= 0)? ft_exit_error("commentaire non valide", 2) : 42;
 	buf[n] = 0;
 	while (buf[i] != 0)
 	{
-		players[no].header.comment[i] = buf[i];
+		if (buf[i] >= 32 && buf[i] <= '~')
+			env->players[env->no].header.comment[i] = buf[i];
+		else
+			ft_exit_error("commentaire non valide", 2);
 		++i;
 	}
-	players[no].header.comment[i] = 0;
+	env->players[env->no].header.comment[i] = 0;
 }
 
-void	ft_fill_memsize(t_proc players[], char *buf, int no, int fd)
+void	ft_fill_memsize(t_env *env, char *buf, int fd)
 {
 	int		i;
 	int		n;
 
 	i = 0;
 	n = read(fd, buf, 8);
-	players[no].mem_size = 0;
+	env->players[env->no].mem_size = 0;
 	while (i < 8)
 	{
 		if (i == 6)
-			players[no].mem_size += ((unsigned int) buf[i]) << 8;
+			env->players[env->no].mem_size += ((unsigned int) buf[i]) << 8;
 		else
-			players[no].mem_size += (unsigned int) buf[i];
+			env->players[env->no].mem_size += (unsigned int) buf[i];
 		++i;
 	}
 }
 
-int		ft_pos_arena(int nb_players, int no)
+int		ft_pos_arena(int nb_players, t_env *env)
 {
-	if (no == 0)
+	if (env->no == 0)
 		return (0);
 	if (nb_players == 2)
 		return (MEM_SIZE / 2);
-	if (nb_players == 3 && no == 1)
+	if (nb_players == 3 && env->no == 1)
 		return (MEM_SIZE / 3);
-	if (nb_players == 3 && no == 2)
+	if (nb_players == 3 && env->no == 2)
 		return (MEM_SIZE / 3 * 2);
-	if (nb_players == 4 && no == 1)
+	if (nb_players == 4 && env->no == 1)
 		return (MEM_SIZE / 4);
-	if (nb_players == 4 && no == 2)
+	if (nb_players == 4 && env->no == 2)
 		return (MEM_SIZE / 4 * 2);
-	if (nb_players == 4 && no == 3)
+	if (nb_players == 4 && env->no == 3)
 		return (MEM_SIZE / 4 * 3);
 	return (0);
 }
 
-void	ft_fill_arena(t_proc players[], char *buf, int no, int fd)
+void	ft_fill_arena(t_env *env, char *buf, int fd)
 {
 	unsigned int	i;
 	unsigned int	start;
 
-	start = ft_pos_arena(players[no].nb_players, no);
+	start = ft_pos_arena(env->players[env->no].nb_players, env);
 	i = 0;
 	lseek(fd, 4, SEEK_CUR);
-	while (i < players[no].mem_size)
+	while (i < env->players[env->no].mem_size)
 	{
-		read(fd, buf, 1);
-		players[no].arena[start + i] = buf[0];
+		if(read(fd, buf, 1))
+		{
+			env->players[env->no].arena[start + i] = buf[0];
+		}
+		else{
+			ft_exit_error("Taile du chompion incorrect", 2);
+		}
 		++i;
 	}
-	players[no].reg[0] = no + 1;
+	printf("avant toujours\n");
+	env->players[env->no].reg[0] = env->no + 1;
 	i = 1;
 	while (i < REG_NUMBER)
-	   players[no].reg[i++] = 0;
-	players[no].pc = start;
-	players[no].carry = 0;
+	   env->players[env->no].reg[i++] = 0;
+	env->players[env->no].pc = start;
+	env->players[env->no].carry = 0;
 }

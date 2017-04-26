@@ -1,7 +1,7 @@
 
 NAME = vm
 
-FILES = fill op vm_init vm
+FILES = fill  vm_init vm debug
 SRC = $(addsuffix .c, $(FILES))
 OBJ = $(SRC:.c=.o)
 CC = gcc
