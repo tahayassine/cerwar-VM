@@ -1,33 +1,46 @@
-#include "tyassine.h"
-#include "debug.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   debug.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tyassine <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/04/27 21:50:32 by tyassine          #+#    #+#             */
+/*   Updated: 2017/04/27 21:50:36 by tyassine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void ft_print_arena(char arena[])
+#include "tyassine.h"
+
+void		ft_print_arena(char arena[])
 {
-	int i;
+	unsigned int i;
 
 	i = 0;
-	while (i < MEM_SIZE) {
-		ft_printf("%02x ", (unsigned int)arena[i] );
-		if ((i % 24) == 0 && i != 0) {
+	ft_printf("0x%04x : ", i);
+	while (i < MEM_SIZE)
+	{
+		ft_printf("%02x ", (unsigned char)arena[i]);
+		if (((i + 1) % 64) == 0 && i != 0 && (i + 1) != MEM_SIZE)
+		{
 			ft_printf("\n");
+			ft_printf("0x%04x : ", (i + 1));
 		}
 		i++;
 	}
 	ft_printf("\n");
 }
 
-// void	ft_print_champion(t_proc players)
-// {
-// 	ft_putstr("Champion ");
-// 	ft_putnbr(players.reg[0]);
-// 	ft_putstr(" : ");
-// 	ft_putstr(players.header.prog_name);
-// 	ft_putstr("\nComment : ");
-// 	ft_putstr(players.header.comment);
-// 	ft_printf("\n%s : %d\n", "taile:" ,players.mem_size);
-// 	ft_putstr("\n\n");
-// }
-void ft_exit_error(char *msg, char nb_error)
+void		ft_print_champion(t_env *env)
+{
+	ft_printf("* player %d, ", (env->no + 1));
+	ft_printf("weighing %d bytes, ", env->players[env->no].mem_size);
+	ft_printf("\"%s\" ", env->players[env->no].header.prog_name);
+	ft_printf("(%s) !", env->players[env->no].header.comment);
+	ft_putstr("\n");
+}
+
+void		ft_exit_error(char *msg, char nb_error)
 {
 	ft_putstr("Error : ");
 	ft_putstr(msg);

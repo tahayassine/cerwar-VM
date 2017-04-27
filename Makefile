@@ -1,5 +1,5 @@
 
-NAME = vm
+NAME = corewar
 
 FILES = fill  vm_init vm debug
 SRC = $(addsuffix .c, $(FILES))

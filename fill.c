@@ -1,37 +1,50 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fill.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tyassine <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/04/27 21:50:40 by tyassine          #+#    #+#             */
+/*   Updated: 2017/04/27 21:50:45 by tyassine         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include <unistd.h>
 #include "libft.h"
 #include "op.h"
 #include "tyassine.h"
 
-void	ft_fill_name(t_env *env, char *buf, int fd)
+void						ft_fill_name(t_env *env, char *buf, int fd)
 {
-	int		i;
-	int		n;
+	int						i;
+	int						n;
 
 	i = 0;
 	n = read(fd, buf, PROG_NAME_LENGTH);
+	(n <= 0) ? ft_exit_error("Le nom non valide", 2) : 42;
 	buf[n] = 0;
 	while (buf[i] != 0)
 	{
 		if (buf[i] >= 32 && buf[i] <= '~')
 			env->players[env->no].header.prog_name[i] = buf[i];
 		else
-			ft_exit_error("commentaire non valide", 2);
+			ft_exit_error("Le nom non valide", 2);
 		++i;
 	}
+	if (ft_strlen(env->players[env->no].header.prog_name) == 0)
+		ft_exit_error("Le nom non valide", 2);
 	env->players[env->no].header.prog_name[i] = 0;
 }
 
-void	ft_fill_comment(t_env *env, char *buf, int fd)
+void						ft_fill_comment(t_env *env, char *buf, int fd)
 {
-	int		i;
-	int		n;
+	int						i;
+	int						n;
 
 	i = 0;
 	n = read(fd, buf, COMMENT_LENGTH);
-	(n <= 0)? ft_exit_error("commentaire non valide", 2) : 42;
+	(n <= 0) ? ft_exit_error("Le commentaire non valide", 2) : 42;
 	buf[n] = 0;
 	while (buf[i] != 0)
 	{
@@ -41,13 +54,15 @@ void	ft_fill_comment(t_env *env, char *buf, int fd)
 			ft_exit_error("commentaire non valide", 2);
 		++i;
 	}
+	if (ft_strlen(env->players[env->no].header.comment) == 0)
+		ft_exit_error("commentaire non valide", 2);
 	env->players[env->no].header.comment[i] = 0;
 }
 
-void	ft_fill_memsize(t_env *env, char *buf, int fd)
+void						ft_fill_memsize(t_env *env, char *buf, int fd)
 {
-	int		i;
-	int		n;
+	int						i;
+	int						n;
 
 	i = 0;
 	n = read(fd, buf, 8);
@@ -55,14 +70,17 @@ void	ft_fill_memsize(t_env *env, char *buf, int fd)
 	while (i < 8)
 	{
 		if (i == 6)
-			env->players[env->no].mem_size += ((unsigned int) buf[i]) << 8;
+			env->players[env->no].mem_size += ((unsigned int)buf[i]) << 8;
 		else
-			env->players[env->no].mem_size += (unsigned int) buf[i];
+			env->players[env->no].mem_size += (unsigned int)buf[i];
 		++i;
 	}
+	if (env->players[env->no].mem_size > CHAMP_MAX_SIZE)
+		ft_exit_error("Taile du chompion incorrect : Tros grand", 2);
+	env->players[env->no].header.prog_size = env->players[env->no].mem_size;
 }
 
-int		ft_pos_arena(int nb_players, t_env *env)
+int							ft_pos_arena(int nb_players, t_env *env)
 {
 	if (env->no == 0)
 		return (0);
@@ -81,7 +99,7 @@ int		ft_pos_arena(int nb_players, t_env *env)
 	return (0);
 }
 
-void	ft_fill_arena(t_env *env, char *buf, int fd)
+void						ft_fill_arena(t_env *env, char *buf, int fd)
 {
 	unsigned int	i;
 	unsigned int	start;
@@ -91,20 +109,16 @@ void	ft_fill_arena(t_env *env, char *buf, int fd)
 	lseek(fd, 4, SEEK_CUR);
 	while (i < env->players[env->no].mem_size)
 	{
-		if(read(fd, buf, 1))
-		{
+		if (read(fd, buf, 1))
 			env->players[env->no].arena[start + i] = buf[0];
-		}
-		else{
+		else
 			ft_exit_error("Taile du chompion incorrect", 2);
-		}
 		++i;
 	}
-	printf("avant toujours\n");
 	env->players[env->no].reg[0] = env->no + 1;
 	i = 1;
 	while (i < REG_NUMBER)
-	   env->players[env->no].reg[i++] = 0;
+		env->players[env->no].reg[i++] = 0;
 	env->players[env->no].pc = start;
 	env->players[env->no].carry = 0;
 }

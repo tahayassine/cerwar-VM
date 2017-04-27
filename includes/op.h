@@ -2,7 +2,6 @@
 #ifndef OP_H
 # define OP_H
 # include "libft.h"
-# include "debug.h"
 
 /*
 ** Toutes les tailles sont en octets.
